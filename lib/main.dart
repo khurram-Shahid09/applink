@@ -1,12 +1,18 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -55,6 +61,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final AppLinks _appLinks = AppLinks();
+
   int _counter = 0;
 
   void _incrementCounter() {
@@ -65,6 +73,22 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _appLinks.uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        final id = uri.pathSegments.last;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyWidget(
+                      data: id,
+                    )));
+      }
     });
   }
 
@@ -120,6 +144,20 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class MyWidget extends StatelessWidget {
+  final String data;
+  const MyWidget({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text(data),
+      ),
     );
   }
 }
